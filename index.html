@@ -1,0 +1,276 @@
+<!doctype html>
+<html>
+<head>
+    <title>FishGame</title>
+    <meta charset="utf-8">
+    <style type="text/css">
+        :root {
+            /* URLs */
+            --url-fish1: url('images/fish1.png');
+            --url-fish2: url('images/fish2.png');
+            --url-fish3: url('images/fish3.png');
+            --url-fish4: url('images/fish4.png');
+            --url-fish5: url('images/fish5.png');
+            --url-fish6: url('images/fish6.png');
+            --url-ocean: url('images/ocean.jpg');
+            --url-pause-icon: url('images/pause_icon.png');
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--url-ocean) no-repeat;
+            background-size: cover;
+        }
+
+        .opts {
+            display: inline-grid;
+            position: relative;
+            width: 50%;
+            grid-template-columns: 1fr 1fr 2fr;
+            grid-column-gap: 2vw;
+            top: 2vw;
+            left: 2vw;
+            z-index: 1;
+        }
+
+        .opts>* {
+            position: relative;
+            height: 4vw;
+        }
+
+        #timer-wrap {
+            width: 10vw;
+            background-color: white;
+            border: .2vw solid black;
+            text-align: center;
+        }
+
+        #timer {
+            position: relative;
+            top: 0.4vw;
+            font-family: monospace;
+            font-size: 3vw;
+            font-weight: bold;
+        }
+
+        #pause {
+            width: 4vw;
+            background: var(--url-pause-icon) no-repeat;
+            background-size: cover;
+        }
+
+        #pause:hover {
+            filter: invert();
+        }
+
+        #pause:active {
+            filter: invert() brightness(50%);
+        }
+
+        #score-wrap {
+            width: fit-content;
+        }
+
+        #score {
+            position: relative;
+            top: 0.1vw;
+            font-size: 1.9em;
+            font-family: monospace;
+            color: #d2582b;
+        }
+
+        .fish {
+            position: absolute;
+        }
+
+        .sm-fish {
+            width: 5vw;
+            height: 5vw;
+        }
+
+        .md-fish {
+            width: 10vw;
+            height: 10vw;
+        }
+
+        .bg-fish {
+            width: 20vw;
+            height: 20vw;
+        }
+
+        .fish1 {
+            background: var(--url-fish1) no-repeat;
+            background-size: contain;
+        }
+
+        .fish2 {
+            background: var(--url-fish2) no-repeat;
+            background-size: contain;
+        }
+
+        .fish3 {
+            background: var(--url-fish3) no-repeat;
+            background-size: contain;
+        }
+
+        .fish4 {
+            background: var(--url-fish4) no-repeat;
+            background-size: contain;
+        }
+
+        .fish5 {
+            background: var(--url-fish5) no-repeat;
+            background-size: contain;
+        }
+
+        .fish6 {
+            background: var(--url-fish6) no-repeat;
+            background-size: contain;
+        }
+
+        #pageHolder {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(2vw);
+            z-index: 2;
+        }
+
+        #pageHolder>div {
+            display: grid;
+            row-gap: 2vw;
+            position: relative;
+            width: fit-content;
+            height: fit-content;
+            margin: auto;
+            top: 30%;
+            text-align: center;
+        }
+
+        .holder-text {
+            color: white;
+            font-size: 1.5em;
+        }
+
+        .btn {
+            display: block;
+            width: 200px;
+            height: 60px;
+            background-color: #0d67ff;
+            text-decoration: none;
+            color: white;
+            text-align: center;
+            transition: 100ms;
+        }
+
+        .btn:hover {
+            filter: brightness(80%);
+            cursor: pointer;
+        }
+
+        .btn:active {
+            filter: brightness(60%);
+        }
+
+        .btn>* {
+            position: relative;;
+            top: 20px;
+            font-size: 1.1em;
+        }
+
+        .btn.no-active {
+            background-color: gray;
+        }
+
+        .btn.no-active:hover {
+            cursor: unset;
+            filter: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="page">
+        <div class="opts">
+            <div id="timer-wrap">
+                <div id="timer"></div>
+            </div>
+            <div id="pause"></div>
+            <div id="score-wrap">
+                <div id="score">Score: 0</div>
+            </div>
+        </div>
+    </div>
+    <div id="pageHolder">
+        <div>
+            <div class="btn no-active" id="continueBtn">
+                <span>Продолжить</span>
+            </div>
+            <div class="btn" id="startGameBtn">
+                <span>Старт</span>
+            </div>
+            <div class="btn" onclick="location.hash = 'test'; return false;">
+                <span>Тест</span>
+            </div>
+            <div class="btn" onclick="location.hash = 'prod'; return false;">
+                <span>Прод</span>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="js/app.js"></script>
+    <script type="text/javascript">
+        const app = new App({
+            timer: {
+                parent: document.querySelector("#timer"),
+                minutes: 2,
+                seconds: 0
+            },
+            holder: {
+                holderElem: document.querySelector("#pageHolder"),
+                holderContentElem:
+                    document.querySelector("#pageHolder>div")
+            },
+            fishes: {
+                parent: document.querySelector("#page"),
+                spawnSpeed: 1000,
+                maxCount: 10,
+                sizes: {
+                    small: "sm-fish",
+                    medium: "md-fish",
+                    big: "bg-fish"
+                },
+                rewards: {
+                    small: 30,
+                    medium: 20,
+                    big: 10
+                }
+            },
+            score: {
+                parent: document.querySelector("#score")
+            },
+            pause: {
+                pause: document.querySelector("#pause"),
+                continue: document.querySelector("#continueBtn")
+            }
+        });
+
+        document.querySelector("#startGameBtn").addEventListener(
+            "click",
+            e => {
+                document.querySelector("#continueBtn").classList.remove('no-active');
+                e.target.classList.add('no-active');
+
+                app.run();
+            }, {
+                    once: true
+            }
+        );
+    </script>
+</body>
+</html>
