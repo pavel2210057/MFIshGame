@@ -195,7 +195,8 @@ class App {
             fishes: [],
             intervalId: null
         },
-        score: 0
+        score: 0,
+        isPause: false
     };
 
     #alignNumber = (number) => {
@@ -347,6 +348,8 @@ class App {
             () => {
                 this.#data.timer.pause();
                 this.#showHolder();
+
+                this.#data.isPause = true;
             }
         );
 
@@ -355,8 +358,18 @@ class App {
             () => {
                 this.#data.timer.run();
                 this.#hideHolder();
+
+                this.#data.isPause = false;
             }
-        )
+        );
+
+        onkeydown = e => {
+            if (e.code === "Space")
+                if (this.#data.isPause)
+                    this.#data.config.pause.continue.click();
+                else
+                    this.#data.config.pause.pause.click();
+        };
     };
 
     #showHolder = (content) => {

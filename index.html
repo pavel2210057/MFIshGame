@@ -193,6 +193,10 @@
             cursor: unset;
             filter: none;
         }
+
+        .btn.active {
+            filter: brightness(60%);
+        }
     </style>
 </head>
 <body>
@@ -215,11 +219,14 @@
             <div class="btn" id="startGameBtn">
                 <span>Старт</span>
             </div>
-            <div class="btn" onclick="location.hash = 'test'; return false;">
+            <div class="btn" onclick="
+                location.hash =
+                    location.hash.length ? '' : 'test';
+                this.classList.toggle('active');
+
+                return false;
+            ">
                 <span>Тест</span>
-            </div>
-            <div class="btn" onclick="location.hash = 'prod'; return false;">
-                <span>Прод</span>
             </div>
         </div>
     </div>
@@ -260,12 +267,14 @@
             }
         });
 
+        /* clean hash */
+        location.hash = "";
+
         document.querySelector("#startGameBtn").addEventListener(
             "click",
             e => {
                 document.querySelector("#continueBtn").classList.remove('no-active');
                 e.target.classList.add('no-active');
-
                 app.run();
             }, {
                     once: true
