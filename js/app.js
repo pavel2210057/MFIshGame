@@ -76,6 +76,8 @@ class Fish extends Renderable{
      * @param data { Object } -> {
      *     minVel: Number,
      *     maxVel: Number,
+     *     min: Object -> { x: Number, y: Number }
+     *     max: Object -> { x: Number, y: Number }
      *     size: Number,
      *     reward: Number
      * }
@@ -90,8 +92,16 @@ class Fish extends Renderable{
                 Math.round(getRand(0, innerHeight))
         };
         const endPoint = {
-            x: Math.round(getRand(0, innerWidth)),
-            y: Math.round(getRand(0, innerHeight))
+            x: Math.round(
+                getRand(
+                    data.min.x, data.max.x
+                )
+            ),
+            y: Math.round(
+                getRand(
+                    data.min.y, data.max.y
+                )
+            )
         };
         const delta = {
             x: endPoint.x - beginPoint.x,
@@ -125,10 +135,11 @@ class Fish extends Renderable{
             this.#data.direction * delta.y + 'px';
 
         this.elem.style.transform = `scale(${
-            delta.x < 0 ? -1 : 1
+            delta.x < 0 && this.#data.direction ||
+            delta.x > 0 && !this.#data.direction ? '-1' : '1'
         }, 1)`;
 
-        this.#data.direction *= -1;
+        this.#data.direction = !this.#data.direction;
     };
 }
 
@@ -243,7 +254,10 @@ class App {
 
         this.#data.timer.addEventListener(
             "TimerEnd",
-            () => this.#gameOver("Game over! Score: " + this.#data.score), {
+            () => this.#gameOver(`
+                <p class="holder-text">Game over!</p>
+                <p class="holder-text">Score: ${this.#data.score}</p>
+             `), {
                 once: true
             }
         );
@@ -300,8 +314,10 @@ class App {
             }).render(
                 this.#data.config.fishes.parent
             ).run({
-                minVel: 5000,
-                maxVel: 10000,
+                minVel: this.#data.config.fishes.minVel,
+                maxVel: this.#data.config.fishes.maxVel,
+                min: this.#data.config.screenOptions.min,
+                max: this.#data.config.screenOptions.max,
                 reward: reward
             }).addEventListener(
                 "click",
@@ -346,7 +362,8 @@ class App {
         this.#data.config.pause.pause.addEventListener(
             "click",
             () => {
-                this.#data.timer.pause();
+                if (this.#data.timer)
+                    this.#data.timer.pause();
                 this.#showHolder();
 
                 this.#data.isPause = true;
@@ -356,7 +373,8 @@ class App {
         this.#data.config.pause.continue.addEventListener(
             "click",
             () => {
-                this.#data.timer.run();
+                if (this.#data.timer)
+                    this.#data.timer.run();
                 this.#hideHolder();
 
                 this.#data.isPause = false;
@@ -385,7 +403,7 @@ class App {
 
     #gameOver = (message) => {
         this.#showHolder(`
-            <p class="holder-text">${message}</p>
+            ${message}
             <a href="index.html" class="btn">
                 <span>Restart</span>
             </a>

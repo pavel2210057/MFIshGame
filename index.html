@@ -235,8 +235,8 @@
         const app = new App({
             timer: {
                 parent: document.querySelector("#timer"),
-                minutes: 2,
-                seconds: 0
+                minutes: 0,
+                seconds: 5
             },
             holder: {
                 holderElem: document.querySelector("#pageHolder"),
@@ -247,6 +247,8 @@
                 parent: document.querySelector("#page"),
                 spawnSpeed: 1000,
                 maxCount: 10,
+                minVel: 5000,
+                maxVel: 10000,
                 sizes: {
                     small: "sm-fish",
                     medium: "md-fish",
@@ -264,6 +266,16 @@
             pause: {
                 pause: document.querySelector("#pause"),
                 continue: document.querySelector("#continueBtn")
+            },
+            screenOptions: {
+                min: {
+                    x: 100,
+                    y: 100
+                },
+                max: {
+                    x: innerWidth - 100,
+                    y: innerHeight - 199
+                }
             }
         });
 
@@ -273,8 +285,8 @@
         document.querySelector("#startGameBtn").addEventListener(
             "click",
             e => {
-                document.querySelector("#continueBtn").classList.remove('no-active');
                 e.target.classList.add('no-active');
+                document.querySelector("#continueBtn").classList.remove('no-active');
                 app.run();
             }, {
                     once: true
