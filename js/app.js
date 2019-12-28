@@ -5,6 +5,10 @@ const abstractClass = () => { throw "Abstract class"; };
 const getRand = (min, max) =>
     min + Math.random() * (max - min);
 
+/**
+ * @class Renderable
+ * Абстрактный класс для создания/вывода элементов
+ */
 class Renderable {
     #elem = null;
 
@@ -23,10 +27,19 @@ class Renderable {
         this.#elem.classList.add(...data);
     };
 
+    /**
+     * @method addEventListener
+     * Добавление события к элементу
+     *
+     * @param event
+     * @param callback
+     * @param options
+     * @return {Renderable}
+     */
     addEventListener(event, callback, options = {}) {
         this.#elem.addEventListener(
             event,
-            callback.bind(this.#elem),
+            callback,
             options
         );
 
@@ -34,6 +47,9 @@ class Renderable {
     }
 
     /**
+     * @method render
+     * Добавляет элемент в конец родительсого
+     *
      * @param parent { Element }
      */
     render(parent) {
@@ -50,6 +66,10 @@ class Renderable {
     }
 }
 
+/**
+ * @class Fish
+ * Класс для работы с игровыми рыбами
+ */
 class Fish extends Renderable{
     #data = {
         elem: null,
@@ -74,6 +94,9 @@ class Fish extends Renderable{
     }
 
     /**
+     * @method run
+     * Рассчитывает анимацию на основе входных данных
+     *
      * @param data { Object } -> {
      *     minVel: Number,
      *     maxVel: Number,
@@ -146,12 +169,20 @@ class Fish extends Renderable{
         this.#data.direction = !this.#data.direction;
     };
 
+    /**
+     * @method remove
+     * Удаляет данные
+     */
     remove() {
         clearInterval(this.#data.intervalId);
         this.elem.remove();
     }
 }
 
+/**
+ * @class Timer
+ * Класс для работы с таймером
+ */
 class Timer extends Renderable {
     #config = {};
     #intervalId = null;
@@ -169,6 +200,12 @@ class Timer extends Renderable {
         this.#config = config;
     }
 
+    /**
+     * @method run
+     * Запускает таймер
+     *
+     * @return {Timer}
+     */
     run() {
         this.#intervalId = setInterval(
             this.#update,
@@ -195,10 +232,18 @@ class Timer extends Renderable {
         );
     };
 
+    /**
+     * @method pause
+     * Ставит таймер на паузу
+     */
     pause() {
         clearInterval(this.#intervalId);
     }
 
+    /**
+     * @method stop
+     * Останавливает таймер
+     */
     stop() {
         clearInterval(this.#intervalId);
         this.elem.dispatchEvent(
@@ -207,6 +252,10 @@ class Timer extends Renderable {
     }
 }
 
+/**
+ * @class App
+ * Класс приложения
+ */
 class App {
     #data = {
         config: null,
@@ -227,6 +276,12 @@ class App {
         this.#data.config = config;
     }
 
+    /**
+     * @method run
+     * Запускает приложение
+     *
+     * @return {App}
+     */
     run() {
         /* hide holder */
         this.#hideHolder();
