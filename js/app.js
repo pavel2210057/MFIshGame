@@ -58,7 +58,8 @@ class Fish extends Renderable{
             y: null
         },
         reward: null,
-        direction: 1
+        direction: 1,
+        intervalId: null
     };
 
     /**
@@ -120,7 +121,10 @@ class Fish extends Renderable{
 
         this.elem.style.transitionDuration = duration + 'ms';
 
-        setInterval(
+        /* first time */
+        this.#execute(delta);
+
+        this.#data.intervalId = setInterval(
             () => this.#execute(delta),
             duration
         );
@@ -141,6 +145,11 @@ class Fish extends Renderable{
 
         this.#data.direction = !this.#data.direction;
     };
+
+    remove() {
+        clearInterval(this.#data.intervalId);
+        this.elem.remove();
+    }
 }
 
 class Timer extends Renderable {
@@ -203,7 +212,7 @@ class App {
         config: null,
         timer: null,
         fishes: {
-            fishes: [],
+            fishes: {},
             intervalId: null
         },
         score: 0,
@@ -273,7 +282,7 @@ class App {
     };
 
     #generateFish = (id) => {
-        if (this.#data.fishes.fishes.length >=
+        if (!id && Object.keys(this.#data.fishes.fishes).length >=
                 this.#data.config.fishes.maxCount) {
             clearInterval(
                 this.#data.fishes.intervalId
@@ -304,9 +313,11 @@ class App {
                 break;
         }
 
-        this.#data.fishes.fishes.push(
+        id = id || "fish" + Object.keys(this.#data.fishes.fishes).length;
+
+        this.#data.fishes.fishes[id] =
             new Fish({
-                id: id || "fish" + this.#data.fishes.fishes.length,
+                id: id,
                 classes: [
                     sizeClass,
                     "fish" + Math.round(getRand(1, 6))
@@ -340,12 +351,7 @@ class App {
                             throw "Size class not found";
                     }
 
-                    this.#data.fishes.fishes.splice(
-                        Number.parseInt(
-                            id.substr(4)
-                        ), 1
-                    );
-                    e.target.remove();
+                    this.#data.fishes.fishes[id].remove();
 
                     this.#data.config.score.parent.innerText =
                         "Score: " + (this.#data.score += score);
@@ -354,8 +360,7 @@ class App {
                 }, {
                     once: true
                 }
-            )
-        );
+            );
     };
 
     #handlePause = () => {
